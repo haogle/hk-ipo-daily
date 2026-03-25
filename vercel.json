@@ -1,4 +1,10 @@
 {
+  "framework": null,
+  "functions": {
+    "api/*.py": {
+      "runtime": "@vercel/python@4.5.1"
+    }
+  },
   "crons": [
     {
       "path": "/api/cron",
