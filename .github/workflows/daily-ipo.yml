@@ -1,0 +1,30 @@
+name: Daily HK IPO Push
+
+on:
+  schedule:
+    # 每天北京时间 09:00 (UTC 01:00)
+    - cron: '0 1 * * *'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  trigger-ipo-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Cron Endpoint
+        run: |
+          response=$(curl -s -w "\n%{http_code}" \
+            --max-time 30 \
+            "https://hk-ipo-daily.vercel.app/api/cron")
+
+          http_code=$(echo "$response" | tail -1)
+          body=$(echo "$response" | head -n -1)
+
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "::error::API returned status $http_code"
+            exit 1
+          fi
+
+          echo "Feishu push completed successfully"
